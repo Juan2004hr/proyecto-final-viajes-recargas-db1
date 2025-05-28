@@ -1,0 +1,1 @@
+-- Script con consultas SQL de validación
