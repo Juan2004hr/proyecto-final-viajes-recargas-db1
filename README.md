@@ -31,10 +31,3 @@ erDiagram
 
 ---
 
-### ⬆️ 5. Sube tu proyecto a GitHub
-
-#### 1. Inicia un repositorio local
-```bash
-git init
-git add .
-git commit -m "Proyecto final completo"
