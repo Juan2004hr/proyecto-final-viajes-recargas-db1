@@ -18,15 +18,6 @@
    - `06_consultas_dispositivos.sql`
    - `07_consultas_mejora_adicional.sql`
 
-## 📐 Diagrama ER (Mermaid)
-
-```mermaid
-erDiagram
-    TARJETAS ||--o{ AUDITORIA_TARJETAS : contiene
-    RECARGAS }o--|| PROMOCIONES : usa
-    VIAJES }o--|| DISPOSITIVOS_VALIDACION : valida
-    VIAJES ||--o{ INCIDENCIAS : presenta
-    INCIDENCIAS ||--|| TIPO_INCIDENCIA : clasificada_como
 ## Tablas creadas o modificadas
 
 | Tabla                | Propósito                                   | Clave primaria     |
@@ -36,5 +27,15 @@ erDiagram
 | dispositivos_validacion | Registro de validadores de viajes        | dispositivo_id     |
 | incidencias          | Reportes de incidencias por viaje           | incidencia_id      |
 
+
+## 📐 Diagrama ER (Mermaid)
+
+```mermaid
+erDiagram
+    TARJETAS ||--o{ AUDITORIA_TARJETAS : contiene
+    RECARGAS }o--|| PROMOCIONES : usa
+    VIAJES }o--|| DISPOSITIVOS_VALIDACION : valida
+    VIAJES ||--o{ INCIDENCIAS : presenta
+    INCIDENCIAS ||--|| TIPO_INCIDENCIA : clasificada_como
 
 
