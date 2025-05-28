@@ -29,5 +29,3 @@ erDiagram
     INCIDENCIAS ||--|| TIPO_INCIDENCIA : clasificada_como
 
 
----
-
