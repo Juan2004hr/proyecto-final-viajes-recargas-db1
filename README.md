@@ -27,5 +27,14 @@ erDiagram
     VIAJES }o--|| DISPOSITIVOS_VALIDACION : valida
     VIAJES ||--o{ INCIDENCIAS : presenta
     INCIDENCIAS ||--|| TIPO_INCIDENCIA : clasificada_como
+## Tablas creadas o modificadas
+
+| Tabla                | Propósito                                   | Clave primaria     |
+|----------------------|---------------------------------------------|--------------------|
+| auditoria_tarjetas   | Registro histórico de cambios de estado     | id                 |
+| promociones          | Promociones aplicadas en recargas           | promocion_id       |
+| dispositivos_validacion | Registro de validadores de viajes        | dispositivo_id     |
+| incidencias          | Reportes de incidencias por viaje           | incidencia_id      |
+
 
 
