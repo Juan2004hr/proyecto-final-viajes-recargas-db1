@@ -1,4 +1,4 @@
-# Taller Final - Programación de Bases de Datos
+# 🧾 Taller Final – Sistema de Gestión de Validaciones y Recargas
 
 **Autores:** Juan David Hernández, Natalia Delgado  
 **Curso:** Programación de Bases de Datos
@@ -28,14 +28,8 @@ Este proyecto contiene la solución al Taller Final de bases de datos, basado en
 - PostgreSQL o similar
 - Editor SQL (como pgAdmin, DBeaver o VS Code con SQLTools)
 
----
-# 🧾 Taller Final – Sistema de Gestión de Validaciones y Recargas
 
-Este proyecto implementa mejoras estructurales en una base de datos para soportar nuevas funcionalidades: auditoría de tarjetas, gestión de promociones, trazabilidad de validaciones, e incidencias durante viajes.
-
----
-
-## 📌 1. Funcionalidades implementadas
+## 📌 . Funcionalidades implementadas
 
 - **Auditoría del estado de las tarjetas:** registro de todos los cambios de estado (activa, bloqueada, etc.).
 - **Promociones aplicadas en recargas:** integración de promociones (bonos y descuentos) en las recargas.
@@ -44,7 +38,7 @@ Este proyecto implementa mejoras estructurales en una base de datos para soporta
 
 ---
 
-## ▶️ 2. Instrucciones para ejecutar los scripts
+## ▶️ . Instrucciones para ejecutar los scripts
 
 Todos los scripts están en la carpeta `scripts/`. Ejecútalos en este orden:
 
@@ -60,7 +54,7 @@ Todos los scripts están en la carpeta `scripts/`. Ejecútalos en este orden:
 
 ---
 
-## 📊 3. Diagramas ER (Mermaid)
+## 📊 . Diagramas ER (Mermaid)
 
 ```mermaid
 erDiagram
