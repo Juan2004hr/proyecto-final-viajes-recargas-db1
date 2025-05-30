@@ -1,216 +1,163 @@
-1)Obtener la cantidad total de recargas que a realizado el usuario con id 5
-SELECT COUNT(*) AS total_recargas
-FROM recargas r
-JOIN tarjetas t ON r.tarjeta_id = t.tarjeta_id
-WHERE t.usuario_id = 5;
+-- ============================
+-- TALLER FINAL - BASE DE DATOS
+-- ============================
 
-Obtener el monto gastado en recargas que ha realizado el usuario “Stiven Muñoz”
-SELECT SUM(r.monto) AS total_gastado
-FROM recargas r
-JOIN tarjetas t ON r.tarjeta_id = t.tarjeta_id
-JOIN usuarios u ON t.usuario_id = u.usuario_id
-WHERE u.nombre = 'Stiven' AND u.apellido = 'Muñoz';
+-- 1. AUDITORÍA DEL ESTADO DE TARJETAS
 
-Puntos de recarga en Chapinero y San Cristóbal
-SELECT l.nombre AS localidad, COUNT(*) AS total_puntos
-FROM puntos_recarga p
-JOIN localidades l ON p.localidad_id = l.localidad_id
-WHERE l.nombre IN ('Chapinero', 'San Cristóbal')
-GROUP BY l.nombre;
+CREATE TABLE auditoria_tarjetas (
+    id SERIAL PRIMARY KEY,
+    tarjeta_id INT,
+    estado_anterior TEXT,
+    estado_nuevo TEXT,
+    fecha_cambio TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-Estación con más ingresos en viajes (2023)
-SELECT e.nombre AS estacion, SUM(t.valor) AS total_ingresos
-FROM viajes v
-JOIN tarifas t ON v.tarifa_id = t.tarifa_id
-JOIN estaciones e ON v.estacion_abordaje_id = e.estacion_id
-WHERE EXTRACT(YEAR FROM v.fecha) = 2023
-GROUP BY e.nombre
-ORDER BY total_ingresos DESC
-LIMIT 1;
+INSERT INTO auditoria_tarjetas (tarjeta_id, estado_anterior, estado_nuevo, fecha_cambio) VALUES
+(1, 'activa', 'bloqueada', '2024-06-15'),
+(1, 'bloqueada', 'activa', '2024-08-20'),
+(2, 'bloqueada', 'suspendida', '2024-12-05'),
+(3, 'activa', 'bloqueada', '2025-01-10'),
+(3, 'bloqueada', 'activa', '2025-02-01'),
+(3, 'activa', 'suspendida', '2025-03-15'),
+(4, 'suspendida', 'activa', '2025-04-10');
 
-Localidad con más ingresos en viajes (2023)
-SELECT l.nombre AS localidad, SUM(t.valor) AS ingresos
-FROM viajes v
-JOIN tarifas t ON v.tarifa_id = t.tarifa_id
-JOIN estaciones e ON v.estacion_abordaje_id = e.estacion_id
-JOIN localidades l ON e.localidad_id = l.localidad_id
-WHERE EXTRACT(YEAR FROM v.fecha) = 2023
-GROUP BY l.nombre
-ORDER BY ingresos DESC
-LIMIT 1;
-
-Monto total de ingresos de la estación ‘Estación Sur Chapinero 1’
-SELECT SUM(t.valor) AS ingresos
-FROM viajes v
-JOIN tarifas t ON v.tarifa_id = t.tarifa_id
-JOIN estaciones e ON v.estacion_abordaje_id = e.estacion_id
-WHERE e.nombre = 'Estación Sur Chapinero 1';
-
-Viajes realizados por la usuaria Diana Díaz
-SELECT COUNT(*) AS cantidad_viajes
-FROM viajes v
-JOIN tarjetas t ON v.tarjeta_id = t.tarjeta_id
-JOIN usuarios u ON t.usuario_id = u.usuario_id
-WHERE u.nombre = 'Diana' AND u.apellido = 'Díaz';
-
-Veces que Luis Pinto ha abordado en Estación Sur El Virrey 2
-SELECT COUNT(*) AS cantidad_abordajes
-FROM viajes v
-JOIN tarjetas t ON v.tarjeta_id = t.tarjeta_id
-JOIN usuarios u ON t.usuario_id = u.usuario_id
-JOIN estaciones e ON v.estacion_abordaje_id = e.estacion_id
-WHERE u.nombre = 'Luis' AND u.apellido = 'Pinto'
-AND e.nombre = 'Estación Sur El Virrey 2';
-
-Dinero gastado por Walter Castaño en ‘Plaza Santa Isabel 6’
-SELECT SUM(tar.valor) AS monto_gastado
-FROM viajes v
-JOIN tarjetas ta ON v.tarjeta_id = ta.tarjeta_id
-JOIN usuarios u ON ta.usuario_id = u.usuario_id
-JOIN tarifas tar ON v.tarifa_id = tar.tarifa_id
-JOIN estaciones e ON v.estacion_abordaje_id = e.estacion_id
-WHERE u.nombre = 'Walter' AND u.apellido = 'Castaño'
-  AND e.nombre = 'Plaza Santa Isabel 6';
-
-Top 5 usuarios que más han gastado en viajes
-SELECT u.nombre, u.apellido, SUM(t.valor) AS total_gastado
-FROM usuarios u
-JOIN tarjetas ta ON u.usuario_id = ta.usuario_id
-JOIN viajes v ON ta.tarjeta_id = v.tarjeta_id
-JOIN tarifas t ON v.tarifa_id = t.tarifa_id
-GROUP BY u.nombre, u.apellido
-ORDER BY total_gastado DESC
-LIMIT 5;
-
-Top 5 usuarios que más gastaron en ‘Plaza Santa Isabel 6’
-SELECT u.nombre, u.apellido, SUM(t.valor) AS total_gastado
-FROM viajes v
-JOIN tarjetas ta ON v.tarjeta_id = ta.tarjeta_id
-JOIN usuarios u ON ta.usuario_id = u.usuario_id
-JOIN tarifas t ON v.tarifa_id = t.tarifa_id
-JOIN estaciones e ON v.estacion_abordaje_id = e.estacion_id
-WHERE e.nombre = 'Plaza Santa Isabel 6'
-GROUP BY u.nombre, u.apellido
-ORDER BY total_gastado DESC
-LIMIT 5;
-
-Usuario con más viajes en 2023
-SELECT u.nombre, u.apellido, COUNT(*) AS total_viajes
-FROM viajes v
-JOIN tarjetas t ON v.tarjeta_id = t.tarjeta_id
-JOIN usuarios u ON t.usuario_id = u.usuario_id
-WHERE EXTRACT(YEAR FROM v.fecha) = 2023
-GROUP BY u.nombre, u.apellido
-ORDER BY total_viajes DESC
-LIMIT 1;
-
-Viajes de usuarias en localidad Kennedy
-SELECT COUNT(*) AS cantidad_viajes
-FROM viajes v
-JOIN tarjetas t ON v.tarjeta_id = t.tarjeta_id
-JOIN usuarios u ON t.usuario_id = u.usuario_id
-JOIN estaciones e ON v.estacion_abordaje_id = e.estacion_id
-JOIN localidades l ON e.localidad_id = l.localidad_id
-WHERE u.genero = 'femenino' AND l.nombre = 'Kennedy';
-
-Usuario que más ha gastado en Kennedy (2023)
-SELECT u.nombre, u.apellido, SUM(t.valor) AS total_gastado
-FROM viajes v
-JOIN tarjetas ta ON v.tarjeta_id = ta.tarjeta_id
-JOIN usuarios u ON ta.usuario_id = u.usuario_id
-JOIN estaciones e ON v.estacion_abordaje_id = e.estacion_id
-JOIN localidades l ON e.localidad_id = l.localidad_id
-JOIN tarifas t ON v.tarifa_id = t.tarifa_id
-WHERE l.nombre = 'Kennedy' AND EXTRACT(YEAR FROM v.fecha) = 2023
-GROUP BY u.nombre, u.apellido
-ORDER BY total_gastado DESC
-LIMIT 1;
-
-5 localidades donde Mauricio García ha gastado más
-SELECT l.nombre, SUM(t.valor) AS total_gastado
-FROM viajes v
-JOIN tarjetas ta ON v.tarjeta_id = ta.tarjeta_id
-JOIN usuarios u ON ta.usuario_id = u.usuario_id
-JOIN estaciones e ON v.estacion_abordaje_id = e.estacion_id
-JOIN localidades l ON e.localidad_id = l.localidad_id
-JOIN tarifas t ON v.tarifa_id = t.tarifa_id
-WHERE u.nombre = 'Mauricio' AND u.apellido = 'García'
-GROUP BY l.nombre
-ORDER BY total_gastado DESC
-LIMIT 5;
-
-Usuarios que han gastado más de 25.000 en ‘Plaza Santa Isabel 6’
-SELECT u.nombre, u.apellido, SUM(t.valor) AS total_gastado
-FROM viajes v
-JOIN tarjetas ta ON v.tarjeta_id = ta.tarjeta_id
-JOIN usuarios u ON ta.usuario_id = u.usuario_id
-JOIN estaciones e ON v.estacion_abordaje_id = e.estacion_id
-JOIN tarifas t ON v.tarifa_id = t.tarifa_id
-WHERE e.nombre = 'Plaza Santa Isabel 6'
-GROUP BY u.nombre, u.apellido
-HAVING SUM(t.valor) > 25000;
-
-Estación con más ingresos en 2023
-SELECT e.nombre, SUM(t.valor) AS total_ingresos
-FROM viajes v
-JOIN tarifas t ON v.tarifa_id = t.tarifa_id
-JOIN estaciones e ON v.estacion_abordaje_id = e.estacion_id
-WHERE EXTRACT(YEAR FROM v.fecha) = 2023
-GROUP BY e.nombre
-ORDER BY total_ingresos DESC
-LIMIT 1;
-
-Localidad con más ingresos en diciembre 2023
-SELECT l.nombre, SUM(t.valor) AS total_ingresos
-FROM viajes v
-JOIN tarifas t ON v.tarifa_id = t.tarifa_id
-JOIN estaciones e ON v.estacion_abordaje_id = e.estacion_id
-JOIN localidades l ON e.localidad_id = l.localidad_id
-WHERE EXTRACT(YEAR FROM v.fecha) = 2023 AND EXTRACT(MONTH FROM v.fecha) = 12
-GROUP BY l.nombre
-ORDER BY total_ingresos DESC
-LIMIT 1;
-
-Viajes en la localidad de Kennedy
-SELECT COUNT(*) AS total_viajes
-FROM viajes v
-JOIN estaciones e ON v.estacion_abordaje_id = e.estacion_id
-JOIN localidades l ON e.localidad_id = l.localidad_id
-WHERE l.nombre = 'Kennedy';
-
-5 localidades con más viajes en 2023
-SELECT l.nombre, COUNT(*) AS total_viajes
-FROM viajes v
-JOIN estaciones e ON v.estacion_abordaje_id = e.estacion_id
-JOIN localidades l ON e.localidad_id = l.localidad_id
-WHERE EXTRACT(YEAR FROM v.fecha) = 2023
-GROUP BY l.nombre
-ORDER BY total_viajes DESC
-LIMIT 5;
-
-Año con más viajes registrados
-SELECT EXTRACT(YEAR FROM fecha) AS anio, COUNT(*) AS total_viajes
-FROM viajes
-GROUP BY anio
-ORDER BY total_viajes DESC
-LIMIT 1;
-
-Día con más viajes en Los Mártires
-SELECT v.fecha, COUNT(*) AS total_viajes
-FROM viajes v
-JOIN estaciones e ON v.estacion_abordaje_id = e.estacion_id
-JOIN localidades l ON e.localidad_id = l.localidad_id
-WHERE l.nombre = 'Los Mártires'
-GROUP BY v.fecha
-ORDER BY total_viajes DESC
-LIMIT 1;
-
-Mes con más viajes en Los Mártires en 2023
-SELECT EXTRACT(MONTH FROM v.fecha) AS mes, COUNT(*) AS total_viajes
-FROM viajes v
-JOIN estaciones e ON v.estacion_abordaje_id = e.estacion_id
-JOIN localidades l ON e.localidad_id = l.localidad_id
-WHERE l.nombre = 'Los Mártires' AND EXTRACT(YEAR FROM v.fecha) = 2023
+-- Consultas:
+-- Cambios por mes del último año
+SELECT TO_CHAR(fecha_cambio, 'YYYY-MM') AS mes, COUNT(*) AS total_cambios
+FROM auditoria_tarjetas
+WHERE fecha_cambio >= CURRENT_DATE - INTERVAL '1 year'
 GROUP BY mes
-ORDER BY total_viajes DESC
+ORDER BY mes;
+
+-- Top 5 tarjetas con más cambios
+SELECT tarjeta_id, COUNT(*) AS total_cambios
+FROM auditoria_tarjetas
+GROUP BY tarjeta_id
+ORDER BY total_cambios DESC
+LIMIT 5;
+
+-- 2. PROMOCIONES EN RECARGAS
+
+CREATE TABLE promociones (
+    promocion_id SERIAL PRIMARY KEY,
+    nombre TEXT NOT NULL,
+    descripcion TEXT
+);
+
+ALTER TABLE recargas
+ADD COLUMN promocion_id INTEGER,
+ADD CONSTRAINT fk_promocion FOREIGN KEY (promocion_id) REFERENCES promociones(promocion_id);
+
+INSERT INTO promociones (nombre, descripcion) VALUES
+('BONO_2000', 'Recarga con bono de 2000 pesos'),
+('DESCUENTO_10', 'Descuento del 10%'),
+('2x1', 'Recarga dos por el precio de una'),
+('BONUS_EXTRA', 'Bonus extra por temporada'),
+('RECARGA_DOBLE', 'Recarga doble en días festivos');
+
+-- Asignar promociones
+UPDATE recargas SET promocion_id = 1 WHERE recarga_id % 5 = 0;
+UPDATE recargas SET promocion_id = 2 WHERE recarga_id % 5 = 1;
+UPDATE recargas SET promocion_id = 3 WHERE recarga_id % 5 = 2;
+UPDATE recargas SET promocion_id = 4 WHERE recarga_id % 5 = 3;
+UPDATE recargas SET promocion_id = 5 WHERE recarga_id % 5 = 4;
+
+-- Consultas:
+SELECT r.recarga_id, r.fecha, r.monto, p.nombre AS promocion, p.descripcion
+FROM recargas r
+JOIN promociones p ON r.promocion_id = p.promocion_id;
+
+SELECT p.nombre AS promocion, SUM(r.monto) AS total_recargado
+FROM recargas r
+JOIN promociones p ON r.promocion_id = p.promocion_id
+WHERE r.fecha >= CURRENT_DATE - INTERVAL '3 months'
+GROUP BY p.nombre;
+
+SELECT * FROM promociones WHERE LOWER(nombre) LIKE '%bonus%';
+
+-- 3. DISPOSITIVOS DE VALIDACIÓN
+
+CREATE TABLE dispositivos_validacion (
+    dispositivo_id SERIAL PRIMARY KEY,
+    tipo VARCHAR(50),
+    descripcion TEXT
+);
+
+INSERT INTO dispositivos_validacion (tipo, descripcion) VALUES
+('torniquete', 'Torniquete estación A'),
+('torniquete', 'Torniquete estación B'),
+('móvil', 'Validador móvil zona norte'),
+('móvil', 'Validador móvil zona sur');
+
+ALTER TABLE viajes
+ADD COLUMN dispositivo_id INTEGER,
+ADD CONSTRAINT fk_dispositivo FOREIGN KEY (dispositivo_id) REFERENCES dispositivos_validacion(dispositivo_id);
+
+-- Asignación a viajes
+UPDATE viajes SET dispositivo_id = 3 WHERE viaje_id BETWEEN 1 AND 3;
+UPDATE viajes SET dispositivo_id = 4 WHERE viaje_id BETWEEN 4 AND 6;
+UPDATE viajes SET dispositivo_id = 1 WHERE viaje_id BETWEEN 7 AND 8;
+UPDATE viajes SET dispositivo_id = 2 WHERE viaje_id BETWEEN 9 AND 10;
+
+-- Consultas:
+SELECT * FROM viajes WHERE dispositivo_id IS NULL;
+
+SELECT v.*
+FROM viajes v
+JOIN dispositivos_validacion d ON v.dispositivo_id = d.dispositivo_id
+WHERE d.tipo ILIKE 'móvil' AND v.fecha BETWEEN '2025-04-01' AND '2025-04-30';
+
+SELECT d.dispositivo_id, d.tipo, COUNT(*) AS total_validaciones
+FROM viajes v
+JOIN dispositivos_validacion d ON v.dispositivo_id = d.dispositivo_id
+GROUP BY d.dispositivo_id, d.tipo
+ORDER BY total_validaciones DESC
 LIMIT 1;
+
+-- 4. MEJORA: INCIDENCIAS EN VIAJES
+
+CREATE TABLE tipo_incidencia (
+    tipo_id SERIAL PRIMARY KEY,
+    descripcion VARCHAR(100)
+);
+
+INSERT INTO tipo_incidencia (descripcion) VALUES
+('Falla en validador'),
+('Tarjeta no leída'),
+('Comportamiento inadecuado'),
+('Demora en validación'),
+('Problemas con saldo');
+
+CREATE TABLE incidencias (
+    incidencia_id SERIAL PRIMARY KEY,
+    viaje_id INT REFERENCES viajes(viaje_id),
+    tipo_id INT REFERENCES tipo_incidencia(tipo_id),
+    descripcion TEXT,
+    fecha_reporte TIMESTAMP DEFAULT NOW()
+);
+
+-- Insertar incidencias aleatorias (simulación)
+INSERT INTO incidencias (viaje_id, tipo_id, descripcion)
+SELECT v.viaje_id, (RANDOM() * 5 + 1)::INT, 'Incidencia simulada para análisis'
+FROM viajes v
+WHERE RANDOM() < 0.3;
+
+-- Consultas:
+SELECT t.descripcion AS tipo_incidencia, COUNT(*) AS total
+FROM incidencias i
+JOIN tipo_incidencia t ON i.tipo_id = t.tipo_id
+GROUP BY t.descripcion
+ORDER BY total DESC;
+
+SELECT v.viaje_id, d.descripcion AS dispositivo, t.descripcion AS tipo_incidencia
+FROM incidencias i
+JOIN viajes v ON i.viaje_id = v.viaje_id
+JOIN tipo_incidencia t ON i.tipo_id = t.tipo_id
+JOIN dispositivos_validacion d ON v.dispositivo_id = d.dispositivo_id;
+
+SELECT i.incidencia_id, v.viaje_id, t.descripcion AS tipo, i.fecha_reporte
+FROM incidencias i
+JOIN viajes v ON i.viaje_id = v.viaje_id
+JOIN tipo_incidencia t ON i.tipo_id = t.tipo_id
+WHERE i.fecha_reporte >= CURRENT_DATE - INTERVAL '15 days';
+
